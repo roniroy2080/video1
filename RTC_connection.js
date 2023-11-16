@@ -36,6 +36,7 @@ document.getElementById('join_btn').addEventListener('click',async() =>{
     try {
         let stream = await user_video();
         local_video.srcObject = stream;
+         Remote_video.srcObject = stream;
     } catch (error) {
         console.warn(error.message)
     }
