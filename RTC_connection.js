@@ -1,6 +1,12 @@
-let socket = io('http://localhost:6500');
+let socket = null;
 const configuration = {'iceServers': [{'urls': 'stun:stun.l.google.com:19302'}]}
 const peerConnection = new RTCPeerConnection(configuration);
+
+let mute_btn = document.getElementById('mute_btn');
+let toast_text = document.getElementById('snackbar');
+let isMute = false;
+let remote_user_name,local_user_name,room_ID;
+let stream_video_and_audio = null;
 
 const constraints = window.constraints = {
     audio: true,
@@ -10,9 +16,14 @@ const constraints = window.constraints = {
 let user_video = async() =>{
     try {
         let stream = await navigator.mediaDevices.getUserMedia(constraints);
+        socket = io('http://localhost:6500');
         return stream;
     } catch (error) {
-        console.warn(error.message);
+        if(error.message)
+        {
+            toast_text.innerHTML = 'Permission Denied';
+            toast();
+        }
     }
 }
 
@@ -29,6 +40,12 @@ let getAnswer = async(offer) =>{
     return ans;
 }
 
+let stream_sending = () =>{
+    stream_getting.getTracks().forEach(track => {
+        console.log(track);
+    });
+}
+
 let local_video = document.getElementById('local_video');
 let Remote_video = document.getElementById('Remote_video');
 
@@ -36,8 +53,20 @@ document.getElementById('join_btn').addEventListener('click',async() =>{
     try {
         let stream = await user_video();
         local_video.srcObject = stream;
-         Remote_video.srcObject = stream;
+        stream_video_and_audio = stream;
     } catch (error) {
         console.warn(error.message)
     }
 })
+
+mute_btn.onclick = () =>{
+    if(isMute)
+    {
+        mute_btn.innerHTML = 'Mute';
+        isMute = false;
+    }else
+    {
+        mute_btn.innerHTML = 'UnMute';
+        isMute = true;
+    }
+}
