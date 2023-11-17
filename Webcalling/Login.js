@@ -32,6 +32,7 @@ document.getElementById('join_room_btn_login').onsubmit = e =>{
 
     }else
     {
+        alert('All Required Filled Must Fill');
         toast_text.innerHTML = 'All Required Filled Must Fill';
         toast();
     }
